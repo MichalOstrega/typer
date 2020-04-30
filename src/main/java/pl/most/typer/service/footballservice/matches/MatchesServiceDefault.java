@@ -101,6 +101,14 @@ public class MatchesServiceDefault implements MatchesService {
         return matchesRepository.findFirstByCompetition(competiton);
     }
 
+    @Override
+    public List<String> getStages(Competition competition) {
+        return findAllByCompetition(competition).stream()
+                .map(match -> match.getStage())
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
 
     private void setCompetitionForMatches(MatchDTO matchDTO, Competition competition) {
         matchDTO.getMatches().forEach(match -> match.setCompetition(competition));

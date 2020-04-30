@@ -32,7 +32,6 @@ public class FootballApiServiceDefault implements FootballApiService {
                 getStringHttpEntity(),
                 returnedEntity
         );
-        log.info(entity.getStatusCode().getReasonPhrase());
         return entity;
     }
 

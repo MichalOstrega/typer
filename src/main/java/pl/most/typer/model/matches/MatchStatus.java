@@ -2,7 +2,7 @@ package pl.most.typer.model.matches;
 
 public enum MatchStatus {
     SCHEDULED,
-    CANCELED,
+    CANCELLED,
     PAUSED,
     IN_PLAY,
     FINISHED,

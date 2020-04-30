@@ -17,6 +17,7 @@
     <!-- Custom styles for this template -->
     <link th:href="@{/css/modern-business.css}" rel="stylesheet">
 
+
 </head>
 
 <body>
@@ -121,6 +122,52 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="divider"></div>
+            <div>
+                <h3 class="display-4" style="text-align: center" th:text="${'Kolejka: ' + typerRound.number}"></h3>
+                <div>
+
+                    <table class="table table-striped table-sm">
+                        <thead>
+                        <th scope="col">Data</th>
+                        <th scope="col">Gospodarz</th>
+                        <th scope="col">Wynik</th>
+                        <th scope="col">Gość</th>
+                        </tr>
+                        </thead>
+                        <tbody id="matchScore">
+                        <tr th:each="match: ${typerRound.typerMatches}">
+                            <td th:text="${#temporals.format(match.utcDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td th:text="${match.homeTeam.name}"></td>
+                            <td th:text="${#objects.nullSafe(match.score.fullTime.homeTeam, '')} + '-' + ${#objects.nullSafe(mapValue.score.fullTime.awayTeam, '')}"></td>
+                            <td th:text="${match.awayTeam.name}"></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    <div class="form-group row">
+
+                        <label class="col-sm-1 col-form-label" for="player">Liga:</label>
+                        <div class="col-sm-3">
+                            <select class="custom-select" id="leagues">
+                                <option th:each="competition : ${navCompetitions}" th:value="${competition.apiId} "
+                                        th:text="${competition.name}"></option>
+                            </select>
+                        </div>
+                        <label class="col-sm-1 col-form-label" for="player">Runda:</label>
+                        <div class="col-sm-3">
+                            <select disabled class="custom-select" id="stages">
+                                <option th:text="Select..."></option>
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <a class="btn btn-secondary"  id="dodajMecze" >Dodaj mecze</a>
+                        </div>
+                    </div>
+
+                </div>
             </div>
         </div>
         <div class="col-sm-2">

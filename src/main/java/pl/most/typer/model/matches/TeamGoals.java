@@ -23,4 +23,5 @@ public class TeamGoals {
     @ToString.Exclude
     private Score score;
 
+
 }

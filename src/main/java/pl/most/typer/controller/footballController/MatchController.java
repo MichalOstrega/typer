@@ -47,6 +47,7 @@ public class MatchController {
     @GetMapping(value = "/{id}/matches")
     private String getMatchesByStages(@PathVariable("id") Integer id,
                                       @RequestParam(name = "stage", required = false) String stage,
+                                      @RequestParam(name = "typerCompetition", required = false) Integer typerCompetitionId,
                                       Model model) {
         Optional<Competition> optionalCompetition = Optional.of(competitionService.getCompetition(id));
         Optional<Match> optionalMatch = matchesService.findFirstByCompetition(new Competition(id, null));
@@ -61,11 +62,7 @@ public class MatchController {
             matchByCompetition = matchesService
                     .findAllByCompetitionAndStage(optionalCompetition.get(), stage);
         } else {
-            matchByCompetition = matchesService
-                    .findAllByCompetition(optionalCompetition.get());
-
-            LinkedHashMap<String, List<Match>> matchesByStage = getStageLinkedHashMap(matchByCompetition);
-            Set<String> stages = matchesByStage.keySet();
+            List<String> stages = matchesService.getStages(optionalCompetition.get());
             if (stages.size() == 1) {
                 return "redirect:/competitions/" + id + "/matches?stage=" + stages.stream().findFirst().get();
             }
@@ -82,6 +79,7 @@ public class MatchController {
         model.addAttribute("competitionName", competitionService.getCompetitionName(id));
         model.addAttribute("matchesByGroup", matchesByGroup);
         model.addAttribute("stageName", stage);
+        model.addAttribute("typerCompetitionId",typerCompetitionId);
 
         return "matches";
     }

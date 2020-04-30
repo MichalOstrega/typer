@@ -4,7 +4,6 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import pl.most.typer.model.matches.Score;
 import pl.most.typer.model.matches.ScoreWinner;
 import pl.most.typer.model.matches.TeamGoals;
 
@@ -28,7 +27,19 @@ public class TyperScore extends BaseModel {
     @OneToOne
     private TeamGoals teamGoals;
 
-    public TyperScore(TyperPlayer typerPlayer, TyperMatch typerMatch, TeamGoals teamGoals) {
+    @OneToOne
+    private TyperPoints typerPoints;
 
+    public TyperScore(TyperPlayer typerPlayer, TyperMatch typerMatch, TeamGoals teamGoals) {
+        this.typerPlayer = typerPlayer;
+        this.typerMatch = typerMatch;
+        this.teamGoals = teamGoals;
+        this.scoreWinner = ScoreWinner.getScoreWinner(teamGoals);
+        this.typerPoints = new TyperPoints(this);
+    }
+
+    public TyperPoints calculatePoints() {
+        //TODO
+        return this.typerPoints;
     }
 }

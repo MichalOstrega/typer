@@ -25,12 +25,14 @@ public class TyperCompetitionServiceDefault implements TyperCompetitionService {
     private TyperCompetitionRepository typerCompetitionRepository;
     private TyperStandingService typerStandingService;
     private TyperPlayerServiceDefault typerPlayerServiceDefault;
+    private TyperRoundService typerRoundService;
 
     public TyperCompetitionServiceDefault(TyperCompetitionRepository typerCompetitionRepository,
-                                          TyperStandingService typerStandingService, TyperLeagueStandingService typerLeagueStandingService, TyperPlayerServiceDefault playerServiceDefault) {
+                                          TyperStandingService typerStandingService, TyperLeagueStandingService typerLeagueStandingService, TyperPlayerServiceDefault playerServiceDefault, TyperRoundService typerRoundService) {
         this.typerCompetitionRepository = typerCompetitionRepository;
         this.typerStandingService = typerStandingService;
         this.typerPlayerServiceDefault = playerServiceDefault;
+        this.typerRoundService = typerRoundService;
     }
 
     private boolean existsById(Integer id) {
@@ -176,6 +178,7 @@ public class TyperCompetitionServiceDefault implements TyperCompetitionService {
 
         //stworzenie nowej tabeli dla nastepnej kolejki
         typerStandingService.createNewTyperStanding(typerCompetition, latestStandingByTyperCompetition);
+        typerRoundService.createNewTyperRound(typerCompetition);
         typerCompetition.setLastUpdated(LocalDateTime.now());
         update(typerCompetition);
     }

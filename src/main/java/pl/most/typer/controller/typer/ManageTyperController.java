@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.*;
 import pl.most.typer.exceptions.ResourceException;
 import pl.most.typer.model.account.PlayerDTO;
 import pl.most.typer.model.typer.TyperCompetition;
+import pl.most.typer.model.typer.TyperRound;
 import pl.most.typer.model.typer.dto.TyperCompetitionDTO;
-import pl.most.typer.service.accountservice.CustomUserDetailsService;
 import pl.most.typer.service.typer.TyperCompetitionService;
 import pl.most.typer.service.typer.TyperPlayerService;
-import pl.most.typer.service.typer.TyperStandingService;
+import pl.most.typer.service.typer.TyperRoundService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -26,17 +26,15 @@ public class ManageTyperController {
     private final String ERROR_ATTR = "errorMessage";
     private final String ERROR_MSG = "Wystąpił błąd z obsługą: ";
     private TyperCompetitionService typerCompetitionService;
-    private TyperStandingService typerStandingService;
     private TyperPlayerService typerPlayerService;
-    private CustomUserDetailsService userDetailsService;
+    private TyperRoundService typerRoundService;
 
     private final int ROW_PER_PAGE = 5;
 
-    public ManageTyperController(TyperCompetitionService typerCompetitionService, TyperStandingService typerStandingService, CustomUserDetailsService userDetailsService, TyperPlayerService typerPlayerService, CustomUserDetailsService userDetailsService1) {
+    public ManageTyperController(TyperCompetitionService typerCompetitionService, TyperPlayerService typerPlayerService, TyperRoundService typerRoundService) {
         this.typerCompetitionService = typerCompetitionService;
-        this.typerStandingService = typerStandingService;
         this.typerPlayerService = typerPlayerService;
-        this.userDetailsService = userDetailsService1;
+        this.typerRoundService = typerRoundService;
     }
 
     @ModelAttribute("typerCompetitionDTO")
@@ -105,8 +103,10 @@ public class ManageTyperController {
     private String editTyperCompetition(@PathVariable("id") Integer id,
                                         Model model) {
         TyperCompetition typerCompetition = null;
+        TyperRound typerRound = null;
         try {
             typerCompetition = typerCompetitionService.findById(id);
+            typerRound = typerRoundService.findLatestTyperRoundByTyperCompetition(typerCompetition);
         } catch (ResourceException ex) {
             log.warn(ex.getMessage());
             model.addAttribute(ERROR_ATTR, ERROR_MSG + "nie znaleziono " + ex.getResource());
@@ -116,6 +116,7 @@ public class ManageTyperController {
         model.addAttribute("typerCompetition", typerCompetition);
         model.addAttribute("players", playerDTOS);
         model.addAttribute("playerDTO", new PlayerDTO());
+        model.addAttribute("typerRound", typerRound);
         return "typerTemplate/typerCompetitionEdit";
     }
 

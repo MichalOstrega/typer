@@ -20,4 +20,5 @@ public interface MatchesService {
     Optional<Match> findFirstByCompetition(Competition competiton);
 
 
+    List<String> getStages(Competition competition);
 }
