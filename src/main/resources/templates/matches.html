@@ -114,7 +114,8 @@
                                                 <div class="float-left">
                                                     <figure class="my-auto">
                                                         <img class="img-center"
-                                                             th:src="${#objects.nullSafe(leftMatchValue.homeTeam.crestUrl, '')}"/>
+                                                             th:src="${#objects.nullSafe(leftMatchValue.homeTeam.crestUrl, '/img/logo/default.png')}"
+                                                             th:onerror="this.onerror=null;this.src='/img/logo/default.png';"/>
                                                         <figcaption style="width: 120px;" class="text-center"
                                                                     th:text="${leftMatchValue.homeTeam.name}"></figcaption>
                                                     </figure>
@@ -128,7 +129,8 @@
                                                 <div class="float-right">
                                                     <figure class="my-auto">
                                                         <img class="img-center"
-                                                             th:src="${#objects.nullSafe(leftMatchValue.awayTeam.crestUrl, '')}"/>
+                                                             th:src="${#objects.nullSafe(leftMatchValue.awayTeam.crestUrl, '/img/logo/default.png')}"
+                                                             th:onerror="this.onerror=null;this.src='/img/logo/default.png';"/>
                                                         <figcaption style="width: 120px;" class="text-center"
                                                                     th:text="${leftMatchValue.awayTeam.name}"></figcaption>
                                                     </figure>
