@@ -47,7 +47,7 @@ public class MatchController {
     @GetMapping(value = "/{id}/matches")
     private String getMatchesByStages(@PathVariable("id") Integer id,
                                       @RequestParam(name = "stage", required = false) String stage,
-                                      @RequestParam(name = "typerCompetition", required = false) Integer typerCompetitionId,
+                                      @RequestParam(name = "TCID", required = false) Integer typerCompetitionId,
                                       Model model) {
         Optional<Competition> optionalCompetition = Optional.of(competitionService.getCompetition(id));
         Optional<Match> optionalMatch = matchesService.findFirstByCompetition(new Competition(id, null));
@@ -79,7 +79,7 @@ public class MatchController {
         model.addAttribute("competitionName", competitionService.getCompetitionName(id));
         model.addAttribute("matchesByGroup", matchesByGroup);
         model.addAttribute("stageName", stage);
-        model.addAttribute("typerCompetitionId",typerCompetitionId);
+        model.addAttribute("TCID",typerCompetitionId);
 
         return "matches";
     }

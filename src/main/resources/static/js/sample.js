@@ -60,14 +60,13 @@ $(document).ready(function () {
     $("#leagues").change(function () {
         var league = $(this).val();
         $.get("/rest/competitions/" + league + "/matches", function (data) {
-            console.log("abc");
             $("#stages").empty();
             data.forEach(function (item, i) {
                 var option = "<option value = " + item + ">" + item + "</option>";
                 $("#stages").append(option);
             });
             $("#stages").prop('disabled', false);
-            var stage = $(this).val();
+            var stage = $("#stages").val();
             dodajMeczeButton(league, stage);
         });
     });
@@ -76,14 +75,13 @@ $(document).ready(function () {
 $(document).ready(function () {
     var league = $("#leagues").val();
     $.get("/rest/competitions/" + league + "/matches", function (data) {
-        console.log("abc");
         $("#stages").empty();
         data.forEach(function (item, i) {
             var option = "<option value = " + item + ">" + item + "</option>";
             $("#stages").append(option);
         });
         $("#stages").prop('disabled', false);
-        var stage = $(this).val();
+        var stage = $("#stages").val();
         dodajMeczeButton(league, stage);
     });
 });
@@ -96,8 +94,9 @@ $(document).ready(function () {
     });
 });
 
-function dodajMeczeButton(leagues, stages) {
-    $("#dodajMecze").prop("href", "/competitions/" + leagues + "/matches?stage=" + stages)
+function dodajMeczeButton(leagues, stages, ) {
+    var id = $("#TCID").text();
+    $("#dodajMecze").prop("href", "/competitions/" + leagues + "/matches?stage=" + stages + "&TCID=" + id)
     $("#dodajMecze").prop('disabled', false);
 }
 
