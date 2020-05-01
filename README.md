@@ -1,1 +1,1 @@
-Football matches typer joint project
+Typer of football matches
