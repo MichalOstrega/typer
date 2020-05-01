@@ -1,1 +1,1 @@
-Football matches typer joint project with @MichalOstrega
+Football matches typer joint project
