@@ -1,6 +1,7 @@
 package pl.most.typer.model.matches;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
@@ -31,6 +32,7 @@ public class Score {
 
     @OneToOne
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Match match;
 
 

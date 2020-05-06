@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 @Entity
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = false)
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class TyperMatch extends BaseModel {
 
@@ -23,10 +23,11 @@ public class TyperMatch extends BaseModel {
     @ManyToOne
     private Match match;
 
+    @EqualsAndHashCode.Exclude
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "typerMatch")
     private Set<TyperScore> typerScores;
 
-    public TyperMatch(Match match) {
+    protected TyperMatch(Match match) {
         this.match = match;
         typerScores = new HashSet<>();
     }
@@ -41,4 +42,6 @@ public class TyperMatch extends BaseModel {
         typerScores.remove(typerScore);
         typerScore.setTyperMatch(null);
     }
+
+
 }

@@ -1,3 +1,5 @@
+
+
 //Confirm delete Modal
 $('#deleteModal').on('show.bs.modal', function (event) {
     var button = $(event.relatedTarget) // Button that triggered the modal
@@ -54,54 +56,10 @@ $(document).ready(function () {
         }, 1500);
     });
 });
-
 let btn = $('#back-top');
-$(document).ready(function () {
-    $("#leagues").change(function () {
-        var league = $(this).val();
-        $.get("/rest/competitions/" + league + "/matches", function (data) {
-            $("#stages").empty();
-            data.forEach(function (item, i) {
-                var option = "<option value = " + item + ">" + item + "</option>";
-                $("#stages").append(option);
-            });
-            $("#stages").prop('disabled', false);
-            var stage = $("#stages").val();
-            dodajMeczeButton(league, stage);
-        });
-    });
-});
-
-$(document).ready(function () {
-    var league = $("#leagues").val();
-    $.get("/rest/competitions/" + league + "/matches", function (data) {
-        $("#stages").empty();
-        data.forEach(function (item, i) {
-            var option = "<option value = " + item + ">" + item + "</option>";
-            $("#stages").append(option);
-        });
-        $("#stages").prop('disabled', false);
-        var stage = $("#stages").val();
-        dodajMeczeButton(league, stage);
-    });
-});
-
-$(document).ready(function () {
-    $("#stages").change(function () {
-        var stage = $(this).val();
-        var league = $("#leagues").val();
-        dodajMeczeButton(league, stage);
-    });
-});
-
-function dodajMeczeButton(leagues, stages, ) {
-    var id = $("#TCID").text();
-    $("#dodajMecze").prop("href", "/competitions/" + leagues + "/matches?stage=" + stages + "&TCID=" + id)
-    $("#dodajMecze").prop('disabled', false);
-}
 
 
-$(window).scroll(function() {
+$(window).scroll(function () {
     if ($(window).scrollTop() > 650) {
         btn.addClass('show');
     } else {
@@ -109,7 +67,38 @@ $(window).scroll(function() {
     }
 });
 
-btn.on('click', function(e) {
+btn.on('click', function (e) {
     e.preventDefault();
-    $('html, body').animate({scrollTop:0}, '300');
+    $('html, body').animate({scrollTop: 0}, '300');
+});
+
+
+$(document).ready(function () {
+    $(".add-match-button").click(function () {
+        var button = $(this);
+        var TCID = $("#TCID").text();
+        var matchId = button.attr("value");
+        var token = $("meta[name='_csrf']").attr("content");
+        var header = $("meta[name='_csrf_header']").attr("content");
+        $.ajax({
+            url: "http://localhost:8080/typer/manager/rest/competitions",
+            method: "post",
+            data: JSON.stringify({
+                "typerCompetitionId": TCID,
+                "matchId": matchId,
+            }),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader(header, token);
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        })
+            .done(function (response) {
+                button.prop("disabled", true);
+                button.text("Mecz dodany do ligi: " + response.name);
+            })
+            .fail(function () {
+                console.log("Wystąpił błąd");
+            })
+    });
 });

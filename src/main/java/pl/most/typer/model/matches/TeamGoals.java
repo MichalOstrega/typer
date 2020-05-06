@@ -6,6 +6,7 @@ import lombok.ToString;
 import pl.most.typer.model.competition.Competition;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -18,6 +19,24 @@ public class TeamGoals {
     private Integer homeTeam;
     private Integer awayTeam;
 
+    //TODO Przedyskutować czy to jest tu potrzebne?
+    @OneToOne
+    @ToString.Exclude
+    private Score score;
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TeamGoals teamGoals = (TeamGoals) o;
+        return Objects.equals(id, teamGoals.id) &&
+                Objects.equals(homeTeam, teamGoals.homeTeam) &&
+                Objects.equals(awayTeam, teamGoals.awayTeam);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, homeTeam, awayTeam);
+    }
 }

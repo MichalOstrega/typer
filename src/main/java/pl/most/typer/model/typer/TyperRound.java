@@ -19,7 +19,8 @@ public class TyperRound extends BaseModel {
     private TyperCompetition typerCompetition;
 
     private Integer number=0;
-    
+
+    @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @OneToMany(mappedBy = "typerRound", cascade = CascadeType.ALL)
     private Set<TyperMatch> typerMatches;
@@ -45,7 +46,7 @@ public class TyperRound extends BaseModel {
         typerMatches.remove(typerMatch);
         typerMatch.setTyperRound(null);
     }
-    
+
     
     
 }

@@ -81,7 +81,7 @@ public class TyperRoundServiceDefault implements TyperRoundService {
     @Override
     public TyperRound update(TyperRound typerRound) {
 
-        if ((typerRound.getTyperCompetition() != null) && typerRound.getId()!=null && existsById(typerRound.getId())) {
+            if ((typerRound.getTyperCompetition() != null) && typerRound.getId()!=null && existsById(typerRound.getId())) {
 
             TyperRound typerRoundDB = findById(typerRound.getId());
             typerRoundDB.setNumber(typerRound.getNumber());

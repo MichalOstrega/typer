@@ -11,11 +11,16 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
+@NoArgsConstructor
 public class TyperCompetitionDTO {
 
     @NotNull
     @NotEmpty
     private String name;
+
+    public TyperCompetitionDTO(@NotNull @NotEmpty String name) {
+        this.name = name;
+    }
 
     public TyperCompetition toTyperCompetition() {
         return new TyperCompetition(this);

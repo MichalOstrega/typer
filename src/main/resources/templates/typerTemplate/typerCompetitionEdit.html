@@ -137,11 +137,11 @@
                         </tr>
                         </thead>
                         <tbody id="matchScore">
-                        <tr th:each="match: ${typerRound.typerMatches}">
-                            <td th:text="${#temporals.format(match.utcDate, 'dd-MM-yyyy HH:mm')}"></td>
-                            <td th:text="${match.homeTeam.name}"></td>
-                            <td th:text="${#objects.nullSafe(match.score.fullTime.homeTeam, '')} + '-' + ${#objects.nullSafe(mapValue.score.fullTime.awayTeam, '')}"></td>
-                            <td th:text="${match.awayTeam.name}"></td>
+                        <tr th:each="typerMatch: ${typerRound.typerMatches}">
+                            <td th:text="${#temporals.format(typerMatch.match.utcDate, 'dd-MM-yyyy HH:mm')}"></td>
+                            <td th:text="${typerMatch.match.homeTeam.name}"></td>
+                            <td th:text="${#objects.nullSafe(typerMatch.match.score.fullTime.homeTeam, '')} + '-' + ${#objects.nullSafe(typerMatch.match.score.fullTime.awayTeam, '')}"></td>
+                            <td th:text="${typerMatch.match.awayTeam.name}"></td>
                         </tr>
                         </tbody>
                     </table>
@@ -206,7 +206,7 @@
 <script src="/vendor/jquery/jquery.min.js"></script>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/js/sample.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="/js/typer.js"></script>
 
 </body>
 

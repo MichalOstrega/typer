@@ -8,6 +8,7 @@ import pl.most.typer.model.matches.ScoreWinner;
 import pl.most.typer.model.matches.TeamGoals;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Data
 @Entity
@@ -41,5 +42,20 @@ public class TyperScore extends BaseModel {
     public TyperPoints calculatePoints() {
         //TODO
         return this.typerPoints;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        TyperScore that = (TyperScore) o;
+        return Objects.equals(typerPlayer, that.typerPlayer) &&
+                Objects.equals(typerMatch, that.typerMatch);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), typerPlayer, typerMatch);
     }
 }

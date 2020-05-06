@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface MatchesService {
 
+    Match findByApiId(Integer apiId);
+
     HttpStatus getMatchInfoFromExternalApi(Integer competitionId);
 
     void saveAll(List<Match> matches);
