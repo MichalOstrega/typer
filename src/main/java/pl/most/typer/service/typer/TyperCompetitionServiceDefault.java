@@ -11,6 +11,7 @@ import pl.most.typer.exceptions.ResourceException;
 import pl.most.typer.exceptions.ResourceNotFoundException;
 import pl.most.typer.model.typer.TyperCompetition;
 import pl.most.typer.model.typer.TyperPlayer;
+import pl.most.typer.model.typer.TyperRound;
 import pl.most.typer.model.typer.TyperStanding;
 import pl.most.typer.repository.typerrepo.TyperCompetitionRepository;
 
@@ -79,6 +80,7 @@ public class TyperCompetitionServiceDefault implements TyperCompetitionService {
                 throw ex;
             }
             TyperCompetition competition = typerCompetitionRepository.save(typerCompetition);
+            countRound(competition.getId());
             return competition;
         }
         else {
@@ -136,6 +138,8 @@ public class TyperCompetitionServiceDefault implements TyperCompetitionService {
         else {
             List<TyperStanding> typerStandings = typerStandingService.findAllByTyperCompetitionId(id);
             typerStandingService.deleteAll(typerStandings);
+            List<TyperRound> typerRounds = typerRoundService.findAllByTyperCompetitionId(id);
+            typerRoundService.deleteAll(typerRounds);
             typerCompetitionRepository.deleteById(id);
         }
     }

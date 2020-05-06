@@ -67,7 +67,7 @@ public class ManageTyperController {
                                        BindingResult bindingResult) {
         if (typerCompetitionDTO != null && !StringUtils.isEmpty(typerCompetitionDTO.getName())) {
             try {
-                typerCompetitionService.save(typerCompetitionDTO.toTyperCompetition());
+                 typerCompetitionService.save(typerCompetitionDTO.toTyperCompetition());
             } catch (ResourceException ex) {
                 bindingResult.rejectValue(ex.getIssue(), "error." + ex.getIssue(), ex.getMessage());
             }
