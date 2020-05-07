@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import lombok.EqualsAndHashCode;
 import pl.most.typer.model.competition.Competition;
 import pl.most.typer.model.competition.Season;
 import pl.most.typer.model.competition.Team;
@@ -40,6 +41,7 @@ public class Match {
 
     private LocalDateTime lastUpdated;
 
+    @EqualsAndHashCode.Exclude
     @OneToOne(cascade = CascadeType.ALL)
     private Score score;
     @OneToOne

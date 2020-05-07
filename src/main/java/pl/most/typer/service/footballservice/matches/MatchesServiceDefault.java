@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import pl.most.typer.exceptions.ResourceException;
+import pl.most.typer.exceptions.ResourceNotFoundException;
 import pl.most.typer.model.competition.Competition;
 import pl.most.typer.model.competition.Season;
 import pl.most.typer.model.competition.Team;
@@ -41,6 +42,16 @@ public class MatchesServiceDefault implements MatchesService {
         this.teamGoalsService = teamGoalsService;
         this.matchesRepository = matchesRepository;
         this.footballApiService = footballApiService;
+    }
+
+    @Override
+    public Match findByApiId(Integer apiId) {
+        Optional<Match> matchOptional = matchesRepository.findByApiId(apiId);
+        return matchOptional.orElseThrow(() -> {
+            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with id: " + apiId);
+            ex.setResource("match");
+            return ex;
+        });
     }
 
     @Override
@@ -99,6 +110,14 @@ public class MatchesServiceDefault implements MatchesService {
     @Override
     public Optional<Match> findFirstByCompetition(Competition competiton) {
         return matchesRepository.findFirstByCompetition(competiton);
+    }
+
+    @Override
+    public List<String> getStages(Competition competition) {
+        return findAllByCompetition(competition).stream()
+                .map(match -> match.getStage())
+                .distinct()
+                .collect(Collectors.toList());
     }
 
 

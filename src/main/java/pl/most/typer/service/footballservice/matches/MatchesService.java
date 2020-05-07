@@ -9,6 +9,8 @@ import java.util.Optional;
 
 public interface MatchesService {
 
+    Match findByApiId(Integer apiId);
+
     HttpStatus getMatchInfoFromExternalApi(Integer competitionId);
 
     void saveAll(List<Match> matches);
@@ -20,4 +22,5 @@ public interface MatchesService {
     Optional<Match> findFirstByCompetition(Competition competiton);
 
 
+    List<String> getStages(Competition competition);
 }

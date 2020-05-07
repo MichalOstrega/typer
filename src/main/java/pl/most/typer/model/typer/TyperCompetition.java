@@ -39,7 +39,7 @@ public class TyperCompetition extends BaseModel {
         this.name = name;
         this.lastUpdated = LocalDateTime.now();
         this.typerPlayers = new ArrayList<>();
-        this.currentRound=0;
+        this.currentRound=-1;
     }
 
     public TyperCompetition(TyperCompetitionDTO typerCompetitionDTO) {

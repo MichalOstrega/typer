@@ -23,13 +23,13 @@ public class HeaderCompetitionListDTO {
         this.competitions.add(new Competition(2021,"Premier League"));
         this.competitions.add(new Competition(2001,"Uefa Champions League"));
         this.competitions.add(new Competition(2018,"European Championship"));
-        this.competitions.add(new Competition(2015,"Ligue 1"));
-        this.competitions.add(new Competition(2002,"Bundesliga"));
-        this.competitions.add(new Competition(2019,"Serie A"));
-        this.competitions.add(new Competition(2003,"Eredivisie"));
-        this.competitions.add(new Competition(2017,"Primeira Liga"));
-        this.competitions.add(new Competition(2014,"Primera Division"));
-        this.competitions.add(new Competition(2000,"Fifa World Cup"));
+//        this.competitions.add(new Competition(2015,"Ligue 1"));
+//        this.competitions.add(new Competition(2002,"Bundesliga"));
+//        this.competitions.add(new Competition(2019,"Serie A"));
+//        this.competitions.add(new Competition(2003,"Eredivisie"));
+//        this.competitions.add(new Competition(2017,"Primeira Liga"));
+//        this.competitions.add(new Competition(2014,"Primera Division"));
+//        this.competitions.add(new Competition(2000,"Fifa World Cup"));
 
         //Mysql
         //this.competitions= competitionService.getAll();

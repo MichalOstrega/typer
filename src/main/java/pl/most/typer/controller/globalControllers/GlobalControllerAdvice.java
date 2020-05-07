@@ -8,6 +8,7 @@ import pl.most.typer.model.dto.HeaderCompetitionListDTO;
 import pl.most.typer.model.competition.Competition;
 import pl.most.typer.model.typer.TyperCompetition;
 import pl.most.typer.repository.typerrepo.TyperCompetitionRepository;
+import pl.most.typer.service.typer.TyperCompetitionService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -19,13 +20,13 @@ public class GlobalControllerAdvice {
 
     public static final String DEFAULT_ERROR_VIEW = "error";
     private HeaderCompetitionListDTO headerCompetitionListDTO;
-    private TyperCompetitionRepository typerCompetitionRepository;
+    private TyperCompetitionService typerCompetitionService;
 
     public GlobalControllerAdvice(
             HeaderCompetitionListDTO headerCompetitionListDTO,
-            TyperCompetitionRepository typerCompetitionRepository) {
+            TyperCompetitionService typerCompetitionService) {
         this.headerCompetitionListDTO = headerCompetitionListDTO;
-        this.typerCompetitionRepository = typerCompetitionRepository;
+        this.typerCompetitionService = typerCompetitionService;
     }
 
     @ModelAttribute("navCompetitions")
@@ -35,7 +36,7 @@ public class GlobalControllerAdvice {
 
     @ModelAttribute("navTyperCompetitions")
     public List<TyperCompetition> getTypersCompetitions() {
-        return typerCompetitionRepository.findAll();
+        return typerCompetitionService.findAll();
     }
 
 
