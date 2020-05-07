@@ -17,8 +17,9 @@ import pl.most.typer.model.account.RoleType;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Qualifier("customUserDetailsService")
-    @Autowired()
+
+
+    @Autowired
     private UserDetailsService userDetailsService;
 
 

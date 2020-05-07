@@ -64,6 +64,11 @@ public class TyperCompetitionServiceDefault implements TyperCompetitionService {
     }
 
     @Override
+    public List<TyperCompetition> findAll() {
+        return typerCompetitionRepository.findAll();
+    }
+
+    @Override
     public TyperCompetition save(TyperCompetition typerCompetition) throws BadResourceException, ResourceAlreadyExistsException {
         if (!StringUtils.isEmpty(typerCompetition.getName())) {
             if (typerCompetition.getId() != null && existsById(typerCompetition.getId())) {

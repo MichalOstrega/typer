@@ -16,6 +16,7 @@ public interface TyperCompetitionService {
     TyperCompetition findById(Integer id) throws ResourceNotFoundException;
 
     List<TyperCompetition> findAll(int pageNumber, int rowPerPage);
+    List<TyperCompetition> findAll();
 
     void update(TyperCompetition typerCompetition);
 
