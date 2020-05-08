@@ -23,7 +23,7 @@ public class ScoreServiceDefault implements ScoreService {
     @Override
     public void saveAll(List<Score> scoreFromMatchDTO) throws ResourceAlreadyExistsException, BadResourceException {
         for (Score score : scoreFromMatchDTO) {
-            if (StringUtils.isEmpty(score)) {
+            if (!StringUtils.isEmpty(score)) {
                 if (score.getId() != null && existsById(score.getId())) {
                     ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("Score with id: " +
                             score.getId() + " already exists");

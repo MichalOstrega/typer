@@ -3,6 +3,9 @@ package pl.most.typer.service.footballservice.matches;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import pl.most.typer.exceptions.BadResourceException;
+import pl.most.typer.exceptions.ResourceAlreadyExistsException;
 import pl.most.typer.exceptions.ResourceException;
 import pl.most.typer.exceptions.ResourceNotFoundException;
 import pl.most.typer.model.competition.Competition;
@@ -45,7 +48,7 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public Match findByApiId(Integer apiId) throws ResourceNotFoundException{
+    public Match findByApiId(Integer apiId) throws ResourceNotFoundException {
         Optional<Match> matchOptional = matchesRepository.findByApiId(apiId);
         return matchOptional.orElseThrow(() -> {
             ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with id: " + apiId);
@@ -55,7 +58,7 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public HttpStatus getMatchInfoFromExternalApi(Integer competitionId) {
+    public HttpStatus getMatchInfoFromExternalApi(Integer competitionId) throws ResourceException {
         List<String> endpoint = Arrays.asList("competitions", competitionId.toString(), "matches");
         Map<String, String> filters = new HashMap<>();
 
@@ -90,10 +93,22 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public void saveAll(List<Match> matches) {
+    public void saveAll(List<Match> matches) throws BadResourceException, ResourceAlreadyExistsException {
         for (Match match : matches) {
-            Optional<Match> byApiId = matchesRepository.findByApiId(match.getApiId());
-            byApiId.orElseGet(() -> matchesRepository.save(match));
+            if (!StringUtils.isEmpty(match)) {
+                if (match.getApiId() != null && existsByApiId(match.getApiId())) {
+                    ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("Match with id: " +
+                            match.getApiId() + " already exists");
+                    ex.setResource("Match");
+                    ex.setIssue("id");
+                } else {
+                    matchesRepository.save(match);
+                }
+            } else {
+                BadResourceException ex = new BadResourceException("Failed to save Match");
+                ex.setErrorMessage("Score is null or empty");
+            }
+
         }
     }
 
@@ -110,6 +125,11 @@ public class MatchesServiceDefault implements MatchesService {
     @Override
     public Optional<Match> findFirstByCompetition(Competition competiton) {
         return matchesRepository.findFirstByCompetition(competiton);
+    }
+
+    @Override
+    public boolean existsByApiId(Integer apiId) {
+        return matchesRepository.existsByApiId(apiId);
     }
 
     @Override
