@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface ScoreService {
     void saveAll(List<Score> scoreFromMatchDTO);
+
+    boolean existsById(Integer id);
 }
