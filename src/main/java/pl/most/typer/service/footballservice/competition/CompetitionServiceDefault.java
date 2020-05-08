@@ -27,7 +27,7 @@ public class CompetitionServiceDefault implements CompetitionService {
     }
 
     @Override
-    public Competition findByApiId(Integer apiId) {
+    public Competition findByApiId(Integer apiId) throws ResourceNotFoundException{
         Optional<Competition> competitionOptional = competitionRepository.findByApiId(apiId);
         return competitionOptional.orElseThrow(() -> {
             ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Competition with id: " + apiId);

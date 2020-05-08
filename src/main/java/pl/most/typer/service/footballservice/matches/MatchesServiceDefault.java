@@ -45,7 +45,7 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public Match findByApiId(Integer apiId) {
+    public Match findByApiId(Integer apiId) throws ResourceNotFoundException{
         Optional<Match> matchOptional = matchesRepository.findByApiId(apiId);
         return matchOptional.orElseThrow(() -> {
             ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with id: " + apiId);
@@ -74,7 +74,7 @@ public class MatchesServiceDefault implements MatchesService {
                 setCompetitionForMatches(matchDTO, competition);
                 setCompetitionForSeasons(matchDTO, competition);
                 setMatchForScore(matchDTO);
-                setScoreForTeamGoals(matchDTO);
+//                setScoreForTeamGoals(matchDTO);
 
                 seasonService.saveOrUpdateAll(getSeasonsFromMatchDTO(matchDTO));
                 teamService.saveAll(getTeamsFromMatchDTO(matchDTO));
@@ -133,14 +133,14 @@ public class MatchesServiceDefault implements MatchesService {
         matchDTO.getMatches().forEach(match -> match.getScore().setMatch(match));
     }
 
-    private void setScoreForTeamGoals(MatchDTO matchDTO) {
-        matchDTO.getMatches().forEach(match -> {
-            match.getScore().getPenalties().setScore(match.getScore());
-            match.getScore().getHalfTime().setScore(match.getScore());
-            match.getScore().getFullTime().setScore(match.getScore());
-            match.getScore().getExtraTime().setScore(match.getScore());
-        });
-    }
+//    private void setScoreForTeamGoals(MatchDTO matchDTO) {
+//        matchDTO.getMatches().forEach(match -> {
+//            match.getScore().getPenalties().setScore(match.getScore());
+//            match.getScore().getHalfTime().setScore(match.getScore());
+//            match.getScore().getFullTime().setScore(match.getScore());
+//            match.getScore().getExtraTime().setScore(match.getScore());
+//        });
+//    }
 
     //zeby dzialalo distinct potrzebne jest nadpisanie metody equals w klasie season
     private List<Season> getSeasonsFromMatchDTO(MatchDTO matchDTO) {
