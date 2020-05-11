@@ -1,5 +1,6 @@
 package pl.most.typer.controller.footballController;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,6 +8,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import pl.most.typer.exceptions.ResourceException;
+import pl.most.typer.exceptions.ResourceNotFoundException;
 import pl.most.typer.model.competition.Competition;
 import pl.most.typer.model.matches.Match;
 import pl.most.typer.service.footballservice.competition.CompetitionService;
@@ -18,12 +21,13 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequestMapping(value = "/competitions")
 public class MatchController {
 
-    private CompetitionService competitionService;
-    private MatchesService matchesService;
+    private final CompetitionService competitionService;
+    private final MatchesService matchesService;
 
     public MatchController(CompetitionService competitionService, MatchesService matchesService) {
         this.competitionService = competitionService;
@@ -48,7 +52,7 @@ public class MatchController {
     private String getMatchesByStages(@PathVariable("id") Integer id,
                                       @RequestParam(name = "stage", required = false) String stage,
                                       @RequestParam(name = "TCID", required = false) String typerCompetitionId,
-                                      Model model) {
+                                      Model model) throws ResourceException {
         Optional<Competition> optionalCompetition = Optional.of(competitionService.getCompetition(id));
         Optional<Match> optionalMatch = matchesService.findFirstByCompetition(new Competition(id, null));
 
@@ -56,31 +60,48 @@ public class MatchController {
             return "redirect:/competitions/" + id + "/matches/update";
         }
 
-        List<Match> matchByCompetition;
+        List<Match> matchByCompetition = null;
 
         if (stage != null) {
-            matchByCompetition = matchesService
-                    .findAllByCompetitionAndStage(optionalCompetition.get(), stage);
+            try {
+                matchByCompetition = matchesService
+                        .findAllByCompetitionAndStage(optionalCompetition.get(), stage);
+            } catch (ResourceException ex) {
+                log.warn(ex.getMessage());
+                throw ex;
+            }
         } else {
-            List<String> stages = matchesService.getStages(optionalCompetition.get());
-            if (stages.size() == 1) {
-                return "redirect:/competitions/" + id + "/matches?stage=" + stages.stream().findFirst().get();
+            try {
+                List<String> stages = matchesService.getStages(optionalCompetition.get());
+                if (stages.size() == 1) {
+                    return "redirect:/competitions/" + id + "/matches?stage=" + stages.stream().findFirst().get();
+                }
+
+                model.addAttribute("apiId", id);
+                model.addAttribute("competitionName", competitionService.getCompetitionName(id));
+                model.addAttribute("stages", stages);
+
+                return "stages";
+            } catch (ResourceException e) {
+                log.warn(e.getMessage());
+                throw e;
             }
 
-            model.addAttribute("apiId", id);
-            model.addAttribute("competitionName", competitionService.getCompetitionName(id));
-            model.addAttribute("stages", stages);
-
-            return "stages";
         }
 
-        LinkedHashMap<String, List<Match>> matchesByGroup = getGroupLinkedHashMap(matchByCompetition);
+        if (matchByCompetition != null) {
+            try {
+                LinkedHashMap<String, List<Match>> matchesByGroup = getGroupLinkedHashMap(matchByCompetition);
 
-        model.addAttribute("competitionName", competitionService.getCompetitionName(id));
-        model.addAttribute("matchesByGroup", matchesByGroup);
-        model.addAttribute("stageName", stage);
-        model.addAttribute("TCID",typerCompetitionId);
-
+                model.addAttribute("competitionName", competitionService.getCompetitionName(id));
+                model.addAttribute("matchesByGroup", matchesByGroup);
+                model.addAttribute("stageName", stage);
+                model.addAttribute("TCID", typerCompetitionId);
+            } catch (ResourceException e) {
+                log.warn(e.getMessage());
+                throw e;
+            }
+        }
         return "matches";
     }
 

@@ -48,16 +48,6 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public Match findByApiId(Integer apiId) throws ResourceNotFoundException {
-        Optional<Match> matchOptional = matchesRepository.findByApiId(apiId);
-        return matchOptional.orElseThrow(() -> {
-            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with id: " + apiId);
-            ex.setResource("match");
-            return ex;
-        });
-    }
-
-    @Override
     public HttpStatus getMatchInfoFromExternalApi(Integer competitionId) throws ResourceException {
         List<String> endpoint = Arrays.asList("competitions", competitionId.toString(), "matches");
         Map<String, String> filters = new HashMap<>();
@@ -113,13 +103,36 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public List<Match> findAllByCompetition(Competition competition) {
-        return matchesRepository.findAllByCompetitionOrderByUtcDateDesc(competition);
+    public Match findByApiId(Integer apiId) throws ResourceNotFoundException {
+        Optional<Match> matchOptional = matchesRepository.findByApiId(apiId);
+        return matchOptional.orElseThrow(() -> {
+            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with id: " + apiId);
+            ex.setResource("match");
+            return ex;
+        });
     }
 
     @Override
-    public List<Match> findAllByCompetitionAndStage(Competition competition, String stage) {
-        return matchesRepository.findAllByCompetitionAndStageOrderByUtcDateDesc(competition, stage);
+    public List<Match> findAllByCompetition(Competition competition) {
+        Optional<List<Match>> optionalMatches = Optional.ofNullable(matchesRepository.findAllByCompetitionOrderByUtcDateDesc(competition));
+        return optionalMatches.orElseThrow(() -> {
+            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with competition: " + competition);
+            ex.setResource("Match");
+            ex.setIssue("competition");
+            throw  ex;
+        });
+    }
+
+    @Override
+    public List<Match> findAllByCompetitionAndStage(Competition competition, String stage) throws ResourceNotFoundException{
+        Optional<List<Match>> optionalMatches = Optional.ofNullable(matchesRepository.findAllByCompetitionAndStageOrderByUtcDateDesc(competition, stage));
+        return optionalMatches.orElseThrow(() -> {
+            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with competition: " + competition +
+                    " and stage: " + stage);
+            ex.setResource("Match");
+            ex.setIssue("competition, stage");
+            throw  ex;
+        });
     }
 
     @Override
@@ -135,7 +148,7 @@ public class MatchesServiceDefault implements MatchesService {
     @Override
     public List<String> getStages(Competition competition) {
         return findAllByCompetition(competition).stream()
-                .map(match -> match.getStage())
+                .map(Match::getStage)
                 .distinct()
                 .collect(Collectors.toList());
     }
