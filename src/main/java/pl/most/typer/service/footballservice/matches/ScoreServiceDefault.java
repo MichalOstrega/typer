@@ -21,20 +21,15 @@ public class ScoreServiceDefault implements ScoreService {
     }
 
     @Override
-    public void saveAll(List<Score> scoreFromMatchDTO) throws ResourceAlreadyExistsException, BadResourceException {
+    public void saveAll(List<Score> scoreFromMatchDTO) throws ResourceAlreadyExistsException {
         for (Score score : scoreFromMatchDTO) {
-            if (!StringUtils.isEmpty(score)) {
-                if (score.getId() != null && existsById(score.getId())) {
-                    ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("Score with id: " +
-                            score.getId() + " already exists");
-                    ex.setResource("Score");
-                    ex.setIssue("id");
-                } else {
-                    scoreRepository.save(score);
-                }
+            if (score.getId() != null && existsById(score.getId())) {
+                ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("Score with id: " +
+                        score.getId() + " already exists");
+                ex.setResource("Score");
+                ex.setIssue("id");
             } else {
-                BadResourceException ex = new BadResourceException("Failed to save Score");
-                ex.setErrorMessage("Score is null or empty");
+                scoreRepository.save(score);
             }
         }
     }

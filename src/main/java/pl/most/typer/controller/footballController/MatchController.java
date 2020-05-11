@@ -15,10 +15,7 @@ import pl.most.typer.model.matches.Match;
 import pl.most.typer.service.footballservice.competition.CompetitionService;
 import pl.most.typer.service.footballservice.matches.MatchesService;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -53,10 +50,18 @@ public class MatchController {
                                       @RequestParam(name = "stage", required = false) String stage,
                                       @RequestParam(name = "TCID", required = false) String typerCompetitionId,
                                       Model model) throws ResourceException {
-        Optional<Competition> optionalCompetition = Optional.of(competitionService.getCompetition(id));
+
+        Competition competition = null;
+        try {
+            competition = competitionService.getCompetition(id);
+        } catch (ResourceException e) {
+            log.error(e.getMessage());
+            throw e;
+        }
+
         Optional<Match> optionalMatch = matchesService.findFirstByCompetition(new Competition(id, null));
 
-        if (checkIfCompetitionMatchExist(optionalCompetition, optionalMatch)) {
+        if (checkIfCompetitionMatchExist(competition, optionalMatch)) {
             return "redirect:/competitions/" + id + "/matches/update";
         }
 
@@ -65,14 +70,22 @@ public class MatchController {
         if (stage != null) {
             try {
                 matchByCompetition = matchesService
-                        .findAllByCompetitionAndStage(optionalCompetition.get(), stage);
+                        .findAllByCompetitionAndStage(competition, stage);
+                LinkedHashMap<String, List<Match>> matchesByGroup = getGroupLinkedHashMap(matchByCompetition);
+
+                model.addAttribute("competitionName", competitionService.getCompetitionName(id));
+                model.addAttribute("matchesByGroup", matchesByGroup);
+                model.addAttribute("stageName", stage);
+                model.addAttribute("TCID", typerCompetitionId);
+
+                return "matches";
             } catch (ResourceException ex) {
                 log.warn(ex.getMessage());
                 throw ex;
             }
         } else {
             try {
-                List<String> stages = matchesService.getStages(optionalCompetition.get());
+                List<String> stages = matchesService.getStages(competition);
                 if (stages.size() == 1) {
                     return "redirect:/competitions/" + id + "/matches?stage=" + stages.stream().findFirst().get();
                 }
@@ -86,23 +99,7 @@ public class MatchController {
                 log.warn(e.getMessage());
                 throw e;
             }
-
         }
-
-        if (matchByCompetition != null) {
-            try {
-                LinkedHashMap<String, List<Match>> matchesByGroup = getGroupLinkedHashMap(matchByCompetition);
-
-                model.addAttribute("competitionName", competitionService.getCompetitionName(id));
-                model.addAttribute("matchesByGroup", matchesByGroup);
-                model.addAttribute("stageName", stage);
-                model.addAttribute("TCID", typerCompetitionId);
-            } catch (ResourceException e) {
-                log.warn(e.getMessage());
-                throw e;
-            }
-        }
-        return "matches";
     }
 
     private LinkedHashMap<String, List<Match>> getStageLinkedHashMap(List<Match> matchByCompetition) {
@@ -117,11 +114,11 @@ public class MatchController {
                 .collect(Collectors.groupingBy(match -> match.getGroup() == null ? "absentGroup" : match.getGroup(), LinkedHashMap::new, Collectors.toList()));
     }
 
-    private boolean checkIfCompetitionMatchExist(Optional<Competition> optionalCompetition, Optional<Match> optionalMatch) {
-        if (optionalCompetition.isEmpty() || optionalMatch.isEmpty()) {
-            return true;
+    private boolean checkIfCompetitionMatchExist(Competition competition, Optional<Match> optionalMatch) {
+        if (!(competition == null || optionalMatch.isEmpty())) {
+            return false;
         }
-        return false;
+        return true;
     }
 
 }

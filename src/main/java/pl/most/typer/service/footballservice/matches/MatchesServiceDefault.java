@@ -85,7 +85,6 @@ public class MatchesServiceDefault implements MatchesService {
     @Override
     public void saveAll(List<Match> matches) throws BadResourceException, ResourceAlreadyExistsException {
         for (Match match : matches) {
-            if (!StringUtils.isEmpty(match)) {
                 if (match.getApiId() != null && existsByApiId(match.getApiId())) {
                     ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("Match with id: " +
                             match.getApiId() + " already exists");
@@ -94,12 +93,8 @@ public class MatchesServiceDefault implements MatchesService {
                 } else {
                     matchesRepository.save(match);
                 }
-            } else {
-                BadResourceException ex = new BadResourceException("Failed to save Match");
-                ex.setErrorMessage("Score is null or empty");
             }
 
-        }
     }
 
     @Override
@@ -114,25 +109,27 @@ public class MatchesServiceDefault implements MatchesService {
 
     @Override
     public List<Match> findAllByCompetition(Competition competition) {
-        Optional<List<Match>> optionalMatches = Optional.ofNullable(matchesRepository.findAllByCompetitionOrderByUtcDateDesc(competition));
-        return optionalMatches.orElseThrow(() -> {
+        List<Match> matches = matchesRepository.findAllByCompetitionOrderByUtcDateDesc(competition);
+        if (matches.isEmpty()) {
             ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with competition: " + competition);
             ex.setResource("Match");
             ex.setIssue("competition");
-            throw  ex;
-        });
+            throw ex;
+        }
+        return matches;
     }
 
     @Override
-    public List<Match> findAllByCompetitionAndStage(Competition competition, String stage) throws ResourceNotFoundException{
-        Optional<List<Match>> optionalMatches = Optional.ofNullable(matchesRepository.findAllByCompetitionAndStageOrderByUtcDateDesc(competition, stage));
-        return optionalMatches.orElseThrow(() -> {
+    public List<Match> findAllByCompetitionAndStage(Competition competition, String stage) throws ResourceNotFoundException {
+        List<Match> matches = matchesRepository.findAllByCompetitionAndStageOrderByUtcDateDesc(competition, stage);
+        if (matches.isEmpty()) {
             ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with competition: " + competition +
                     " and stage: " + stage);
             ex.setResource("Match");
             ex.setIssue("competition, stage");
-            throw  ex;
-        });
+            throw ex;
+        };
+        return matches;
     }
 
     @Override

@@ -22,22 +22,16 @@ public class TeamGoalsServiceDefault implements TeamGoalsService {
     }
 
     @Override
-    public void saveAll(List<TeamGoals> teamGoalsFromMatchDTO) throws ResourceAlreadyExistsException, BadResourceException {
+    public void saveAll(List<TeamGoals> teamGoalsFromMatchDTO) throws ResourceAlreadyExistsException {
         for (TeamGoals teamGoals : teamGoalsFromMatchDTO) {
-            if (!StringUtils.isEmpty(teamGoals)) {
-                if (teamGoals.getId() != null && existById(teamGoals.getId())) {
-                    ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("TeamGoals with id: " +
-                            teamGoals.getId() + " already exists");
-                    ex.setResource("TeamGoals");
-                    ex.setIssue("id");
-                } else {
-                    teamGoalsRepository.save(teamGoals);
-                }
+            if (teamGoals.getId() != null && existById(teamGoals.getId())) {
+                ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("TeamGoals with id: " +
+                        teamGoals.getId() + " already exists");
+                ex.setResource("TeamGoals");
+                ex.setIssue("id");
             } else {
-                BadResourceException ex = new BadResourceException("Failed to save TeamGoals");
-                ex.setErrorMessage("TeamGoals is null or empty");
+                teamGoalsRepository.save(teamGoals);
             }
-
         }
     }
 
