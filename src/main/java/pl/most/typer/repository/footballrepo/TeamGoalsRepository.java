@@ -10,4 +10,7 @@ import java.util.Optional;
 public interface TeamGoalsRepository extends CrudRepository<TeamGoals, Integer> {
     Optional<TeamGoals> findById(Integer id);
 
+    boolean existsById(Integer apiId);
+
+
 }

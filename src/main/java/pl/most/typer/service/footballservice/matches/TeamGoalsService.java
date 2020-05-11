@@ -6,4 +6,7 @@ import java.util.List;
 
 public interface TeamGoalsService {
     void saveAll(List<TeamGoals> scoreFromMatchDTO);
+
+    boolean existById(Integer id);
+
 }

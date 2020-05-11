@@ -3,6 +3,9 @@ package pl.most.typer.service.footballservice.matches;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import pl.most.typer.exceptions.BadResourceException;
+import pl.most.typer.exceptions.ResourceAlreadyExistsException;
 import pl.most.typer.exceptions.ResourceException;
 import pl.most.typer.exceptions.ResourceNotFoundException;
 import pl.most.typer.model.competition.Competition;
@@ -45,17 +48,7 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public Match findByApiId(Integer apiId) {
-        Optional<Match> matchOptional = matchesRepository.findByApiId(apiId);
-        return matchOptional.orElseThrow(() -> {
-            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with id: " + apiId);
-            ex.setResource("match");
-            return ex;
-        });
-    }
-
-    @Override
-    public HttpStatus getMatchInfoFromExternalApi(Integer competitionId) {
+    public HttpStatus getMatchInfoFromExternalApi(Integer competitionId) throws ResourceException {
         List<String> endpoint = Arrays.asList("competitions", competitionId.toString(), "matches");
         Map<String, String> filters = new HashMap<>();
 
@@ -74,7 +67,7 @@ public class MatchesServiceDefault implements MatchesService {
                 setCompetitionForMatches(matchDTO, competition);
                 setCompetitionForSeasons(matchDTO, competition);
                 setMatchForScore(matchDTO);
-                setScoreForTeamGoals(matchDTO);
+//                setScoreForTeamGoals(matchDTO);
 
                 seasonService.saveOrUpdateAll(getSeasonsFromMatchDTO(matchDTO));
                 teamService.saveAll(getTeamsFromMatchDTO(matchDTO));
@@ -90,21 +83,53 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
-    public void saveAll(List<Match> matches) {
+    public void saveAll(List<Match> matches) throws BadResourceException, ResourceAlreadyExistsException {
         for (Match match : matches) {
-            Optional<Match> byApiId = matchesRepository.findByApiId(match.getApiId());
-            byApiId.orElseGet(() -> matchesRepository.save(match));
-        }
+                if (match.getApiId() != null && existsByApiId(match.getApiId())) {
+                    ResourceAlreadyExistsException ex = new ResourceAlreadyExistsException("Match with id: " +
+                            match.getApiId() + " already exists");
+                    ex.setResource("Match");
+                    ex.setIssue("id");
+                } else {
+                    matchesRepository.save(match);
+                }
+            }
+
+    }
+
+    @Override
+    public Match findByApiId(Integer apiId) throws ResourceNotFoundException {
+        Optional<Match> matchOptional = matchesRepository.findByApiId(apiId);
+        return matchOptional.orElseThrow(() -> {
+            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with id: " + apiId);
+            ex.setResource("match");
+            return ex;
+        });
     }
 
     @Override
     public List<Match> findAllByCompetition(Competition competition) {
-        return matchesRepository.findAllByCompetitionOrderByUtcDateDesc(competition);
+        List<Match> matches = matchesRepository.findAllByCompetitionOrderByUtcDateDesc(competition);
+        if (matches.isEmpty()) {
+            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with competition: " + competition);
+            ex.setResource("Match");
+            ex.setIssue("competition");
+            throw ex;
+        }
+        return matches;
     }
 
     @Override
-    public List<Match> findAllByCompetitionAndStage(Competition competition, String stage) {
-        return matchesRepository.findAllByCompetitionAndStageOrderByUtcDateDesc(competition, stage);
+    public List<Match> findAllByCompetitionAndStage(Competition competition, String stage) throws ResourceNotFoundException {
+        List<Match> matches = matchesRepository.findAllByCompetitionAndStageOrderByUtcDateDesc(competition, stage);
+        if (matches.isEmpty()) {
+            ResourceNotFoundException ex = new ResourceNotFoundException("Cannot find Match with competition: " + competition +
+                    " and stage: " + stage);
+            ex.setResource("Match");
+            ex.setIssue("competition, stage");
+            throw ex;
+        };
+        return matches;
     }
 
     @Override
@@ -113,9 +138,14 @@ public class MatchesServiceDefault implements MatchesService {
     }
 
     @Override
+    public boolean existsByApiId(Integer apiId) {
+        return matchesRepository.existsByApiId(apiId);
+    }
+
+    @Override
     public List<String> getStages(Competition competition) {
         return findAllByCompetition(competition).stream()
-                .map(match -> match.getStage())
+                .map(Match::getStage)
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -133,14 +163,14 @@ public class MatchesServiceDefault implements MatchesService {
         matchDTO.getMatches().forEach(match -> match.getScore().setMatch(match));
     }
 
-    private void setScoreForTeamGoals(MatchDTO matchDTO) {
-        matchDTO.getMatches().forEach(match -> {
-            match.getScore().getPenalties().setScore(match.getScore());
-            match.getScore().getHalfTime().setScore(match.getScore());
-            match.getScore().getFullTime().setScore(match.getScore());
-            match.getScore().getExtraTime().setScore(match.getScore());
-        });
-    }
+//    private void setScoreForTeamGoals(MatchDTO matchDTO) {
+//        matchDTO.getMatches().forEach(match -> {
+//            match.getScore().getPenalties().setScore(match.getScore());
+//            match.getScore().getHalfTime().setScore(match.getScore());
+//            match.getScore().getFullTime().setScore(match.getScore());
+//            match.getScore().getExtraTime().setScore(match.getScore());
+//        });
+//    }
 
     //zeby dzialalo distinct potrzebne jest nadpisanie metody equals w klasie season
     private List<Season> getSeasonsFromMatchDTO(MatchDTO matchDTO) {

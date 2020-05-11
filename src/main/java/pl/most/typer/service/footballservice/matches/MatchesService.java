@@ -21,6 +21,7 @@ public interface MatchesService {
 
     Optional<Match> findFirstByCompetition(Competition competiton);
 
+    boolean existsByApiId(Integer apiId);
 
     List<String> getStages(Competition competition);
 }

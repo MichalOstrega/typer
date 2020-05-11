@@ -19,10 +19,10 @@ public class TeamGoals {
     private Integer homeTeam;
     private Integer awayTeam;
 
-    //TODO Przedyskutować czy to jest tu potrzebne?
-    @OneToOne
-    @ToString.Exclude
-    private Score score;
+//    //TODO Przedyskutować czy to jest tu potrzebne? Mozna usunąć, póki co zakomentowałem wszystkie usage, gdyby jednak coś było nie tak, potem sie usunie
+//    @OneToOne
+//    @ToString.Exclude
+//    private Score score;
 
 
     @Override

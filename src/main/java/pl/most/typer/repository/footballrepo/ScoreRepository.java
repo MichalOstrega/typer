@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface ScoreRepository extends CrudRepository<Score, Integer> {
 
     Optional<Score> findById(Integer id);
+
+    boolean existsById(Integer id);
 }
